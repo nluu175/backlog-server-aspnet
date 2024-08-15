@@ -12,6 +12,8 @@ namespace BacklogAPI.Data
 
         public DbSet<Game> Games { get; set; }
         public DbSet<Genre> Genres { get; set; }
+        public DbSet<Backlog> Backlogs { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
 
