@@ -30,13 +30,13 @@ namespace BacklogAPI.Controllers
         [HttpGet("{game_id}")]
         public IActionResult GetGame(Guid game_id)
         {
-            var gameDto = _gameRepository.GetGame(game_id);
-            if (gameDto == null)
+            var game = _gameRepository.GetGame(game_id);
+            if (game == null)
             {
                 return NotFound();
             }
+            var gameDto = game.ToGameDto();
 
-            // TODO: https://github.com/teddysmithdev/FinShark/blob/master/api/Controllers/StockController.cs
             return Ok(gameDto);
         }
 
@@ -44,8 +44,12 @@ namespace BacklogAPI.Controllers
         [HttpPost]
         public IActionResult CreateGame([FromBody] CreateGameDto gameDto)
         {
-            var createGameDto = _gameRepository.CreateGame(gameDto);
-            return Ok(createGameDto);
+            // NOTE: Check out "this"
+            var game = gameDto.ToGameFromCreateGameDto(_gameRepository);
+            var createdGame = _gameRepository.CreateGame(game);
+            var createdGameDto = createdGame.ToGameDto();
+
+            return CreatedAtAction(nameof(GetGame), new { game_id = createdGameDto.Id }, createdGameDto);
         }
     }
 }

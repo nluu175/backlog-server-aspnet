@@ -1,6 +1,4 @@
 using BacklogAPI.Data;
-using BacklogAPI.Dtos;
-using BacklogAPI.Mappers;
 using BacklogAPI.Models;
 
 namespace BacklogAPI.Repository
@@ -20,18 +18,17 @@ namespace BacklogAPI.Repository
             return games;
         }
 
-        public GameDto? GetGame(Guid gameId)
+        public Game? GetGame(Guid gameId)
         {
             var game = _context.Games.Find(gameId);
-            return game?.ToGameDto();
+            return game;
         }
 
-        public GameDto CreateGame(CreateGameDto gameDto)
+        public Game CreateGame(Game game)
         {
-            var game = gameDto.ToGameFromCreateGameDto(this);
             _context.Games.Add(game);
             _context.SaveChanges();
-            return game.ToGameDto();
+            return game;
         }
 
         public Genre? GetGenreById(Guid id)
