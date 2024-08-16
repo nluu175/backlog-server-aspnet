@@ -1,4 +1,4 @@
-namespace BacklogAPI.DTOs
+namespace BacklogAPI.Dtos
 {
     public class GenreDto
     {

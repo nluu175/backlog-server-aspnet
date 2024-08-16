@@ -39,78 +39,17 @@ namespace BacklogAPI.Controllers
                 return NotFound();
             }
 
-            var requestUrl = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_steamApiKey}&steamid={steam_id}&include_appinfo=true&format=json";
+            var dataFormat = "json";
 
-            try
-            {
-                var response = await _httpClient.GetStringAsync(requestUrl);
-                var steamObject = JObject.Parse(response);
-                var gamesField = steamObject["response"]?["games"]?.ToObject<JArray>();
+            var requestUrl = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_steamApiKey}&steamid={steam_id}&include_appinfo=true&format={dataFormat}";
 
-                if (gamesField == null)
-                {
-                    return BadRequest(new { message = "No games found for the user." });
-                }
+            var response = await _httpClient.GetStringAsync(requestUrl);
 
-                var placeholderDescription = (string)null;
-                var placeholderReleaseDate = (DateTime?)null;
-                var placeholderPlatform = (string)null;
-                var placeholderGenres = new[] { Guid.Parse("49941f0a-b60e-4ce0-baf2-378520c00a0a") };
 
-                foreach (var game in gamesField)
-                {
-                    var appId = game["appid"].Value<int>();
-                    var gameName = game["name"].Value<string>();
-                    var playtimeForever = game["playtime_forever"].Value<int>();
+            return Ok(response);
 
-                    var gameEntity = await _context.Games.FirstOrDefaultAsync(g => g.SteamAppId == appId);
-                    if (gameEntity == null)
-                    {
-                        gameEntity = new Game
-                        {
-                            SteamAppId = appId,
-                            Name = gameName,
-                            Description = placeholderDescription,
-                            ReleaseDate = placeholderReleaseDate,
-                            Platform = placeholderPlatform
-                        };
-                        _context.Games.Add(gameEntity);
-                        await _context.SaveChangesAsync();
 
-                        gameEntity.Genres.AddRange(placeholderGenres.Select(g => new GameGenre { GameId = gameEntity.Id, GenreId = g }));
-                        await _context.SaveChangesAsync();
-                    }
 
-                    var backlogEntryStatus = playtimeForever != 0 ? 0 : 1;
-                    var backlog = await _context.Backlogs.FirstOrDefaultAsync(b => b.UserId == user.Id && b.GameId == gameEntity.Id);
-                    if (backlog == null)
-                    {
-                        backlog = new Backlog
-                        {
-                            UserId = user.Id,
-                            GameId = gameEntity.Id,
-                            Status = backlogEntryStatus,
-                            Rating = 0,
-                            Comment = null,
-                            Playtime = playtimeForever
-                        };
-                        _context.Backlogs.Add(backlog);
-                    }
-                    else
-                    {
-                        backlog.Status = 1;
-                        backlog.Rating = 1;
-                        backlog.Playtime = playtimeForever;
-                    }
-                    await _context.SaveChangesAsync();
-                }
-
-                return Ok(gamesField);
-            }
-            catch (HttpRequestException error)
-            {
-                return BadRequest(new { message = error.Message });
-            }
         }
     }
 }

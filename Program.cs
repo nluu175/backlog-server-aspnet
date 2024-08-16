@@ -1,16 +1,20 @@
 using BacklogAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using BacklogAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<BacklogDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 // Add services to the container.
 builder.Services.AddControllers();
+builder.Services.AddScoped<GameRepository>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(typeof(Program)); // Register AutoMapper
 
 var app = builder.Build();
 

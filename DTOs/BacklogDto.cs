@@ -1,4 +1,4 @@
-namespace BacklogAPI.DTOs
+namespace BacklogAPI.Dtos
 {
     public class BacklogDto
     {
@@ -9,13 +9,11 @@ namespace BacklogAPI.DTOs
             COMPLETED = 2
         }
         public Guid Id { get; set; }
-        public UserDto? User { get; set; }
-        public GameDto? Game { get; set; }
         public StatusTypes Status { get; set; }
         public float Rating { get; set; }
-        public string Comment { get; set; }
-        public float Playtime { get; set; }
-        public string Name { get; set; }
+        public required string Comment { get; set; }
+        public required float Playtime { get; set; }
+        public required string Name { get; set; }
         public int SteamAppId { get; set; }
     }
 }

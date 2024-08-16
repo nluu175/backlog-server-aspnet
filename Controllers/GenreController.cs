@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using BacklogAPI.Data;
-using BacklogAPI.DTOs;
+using BacklogAPI.Dtos;
 using BacklogAPI.Models;
 using System;
 using System.Linq;

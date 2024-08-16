@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using BacklogAPI.Data;
-using BacklogAPI.DTOs;
+using BacklogAPI.Dtos;
 using BacklogAPI.Models;
 using System;
 using System.Linq;
@@ -52,7 +52,7 @@ namespace BacklogAPI.Controllers
             }
 
             // Update fields
-            backlog.Status = (Backlog.StatusTypes?)backlogDto.Status;
+            backlog.Status = (Backlog.StatusTypes)backlogDto.Status;
             backlog.Rating = backlogDto.Rating;
             backlog.Comment = backlogDto.Comment;
             backlog.Playtime = (int)backlogDto.Playtime;

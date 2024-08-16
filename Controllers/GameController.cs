@@ -1,70 +1,51 @@
 using Microsoft.AspNetCore.Mvc;
-using BacklogAPI.Models;
-using BacklogAPI.Data;
-using BacklogAPI.DTOs;
-using AutoMapper;
+using BacklogAPI.Dtos;
+using BacklogAPI.Repository;
+using BacklogAPI.Mappers;
 
 namespace BacklogAPI.Controllers
 {
     [ApiController]
-    [Route("backlog/games")]
+    [Route("api/games")]
     public class GameController : ControllerBase
     {
-        private readonly BacklogDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly GameRepository _gameRepository;
 
-        public GameController(BacklogDbContext context, IMapper mapper)
+        public GameController(GameRepository gameRepository)
         {
-            _context = context;
-            _mapper = mapper;
+            _gameRepository = gameRepository;
+        }
+
+        // GET: /backlog/games
+        [HttpGet]
+        public IActionResult GetGames()
+        {
+            var games = _gameRepository.GetGames();
+            var gamesDto = games.Select(g => g.ToGameDto()).ToList();
+
+            return Ok(gamesDto);
         }
 
         // GET: /backlog/games/{game_id}
         [HttpGet("{game_id}")]
         public IActionResult GetGame(Guid game_id)
         {
-            var game = _context.Games.Find(game_id);
-            if (game == null)
+            var gameDto = _gameRepository.GetGame(game_id);
+            if (gameDto == null)
             {
                 return NotFound();
             }
 
-            var gameDto = _mapper.Map<GameDto>(game);
+            // TODO: https://github.com/teddysmithdev/FinShark/blob/master/api/Controllers/StockController.cs
             return Ok(gameDto);
-        }
-
-        // GET: /backlog/games
-        [HttpGet]
-        public IActionResult GetGames([FromQuery] int? page, [FromQuery] int? size)
-        {
-            var games = _context.Games.AsQueryable();
-
-            if (page.HasValue && size.HasValue)
-            {
-                var paginatedGames = games.Skip((page.Value - 1) * size.Value).Take(size.Value).ToList();
-                var paginatedGameDtos = _mapper.Map<List<GameDto>>(paginatedGames);
-                return Ok(paginatedGameDtos);
-            }
-
-            var gameDtos = _mapper.Map<List<GameDto>>(games.ToList());
-            return Ok(gameDtos);
         }
 
         // POST: /backlog/games
         [HttpPost]
-        public IActionResult CreateGame([FromBody] GameDto gameDto)
+        public IActionResult CreateGame([FromBody] CreateGameDto gameDto)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var game = _mapper.Map<Game>(gameDto);
-            _context.Games.Add(game);
-            _context.SaveChanges();
-
-            var createdGameDto = _mapper.Map<GameDto>(game);
-            return CreatedAtAction(nameof(GetGame), new { game_id = game.Id }, createdGameDto);
+            var createGameDto = _gameRepository.CreateGame(gameDto);
+            return Ok(createGameDto);
         }
     }
 }
