@@ -6,7 +6,7 @@ namespace BacklogAPI.Mappers
 {
     public static class GameMappers
     {
-
+        // -- Game
         public static GameDto ToGameDto(this Game gameModel)
         {
             return new GameDto
@@ -29,9 +29,22 @@ namespace BacklogAPI.Mappers
                 Description = gameDto.Description,
                 ReleaseDate = gameDto.ReleaseDate,
                 SteamAppId = gameDto.SteamAppId,
-                Genres = gameDto.Genres.Select(genreId => gameRepository.GetGenreById(genreId)).ToList(),
-
+                Genres = gameDto.Genres
+                    .Select(genreId => gameRepository.GetGenreById(genreId))
+                    .Where(g => g != null)
+                    .ToList()!,
                 Platform = gameDto.Platform
+            };
+        }
+
+        // -- Genre
+        public static GenreDto ToGenreDto(this Genre genreModel)
+        {
+            return new GenreDto
+            {
+                Id = genreModel.Id,
+                Name = genreModel.Name,
+                Code = genreModel.Code
             };
         }
     }

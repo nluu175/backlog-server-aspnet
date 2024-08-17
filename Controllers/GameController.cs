@@ -16,7 +16,7 @@ namespace BacklogAPI.Controllers
             _gameRepository = gameRepository;
         }
 
-        // GET: /backlog/games
+        // GET: /api/games
         [HttpGet]
         public IActionResult GetGames()
         {
@@ -26,7 +26,7 @@ namespace BacklogAPI.Controllers
             return Ok(gamesDto);
         }
 
-        // GET: /backlog/games/{game_id}
+        // GET: /api/games/{game_id}
         [HttpGet("{game_id}")]
         public IActionResult GetGame(Guid game_id)
         {
@@ -40,7 +40,7 @@ namespace BacklogAPI.Controllers
             return Ok(gameDto);
         }
 
-        // POST: /backlog/games
+        // POST: /api/games
         [HttpPost]
         public IActionResult CreateGame([FromBody] CreateGameDto gameDto)
         {

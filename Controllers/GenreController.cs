@@ -1,50 +1,43 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AutoMapper;
-using BacklogAPI.Data;
 using BacklogAPI.Dtos;
-using BacklogAPI.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using BacklogAPI.Repository;
+using BacklogAPI.Mappers;
 
 namespace BacklogAPI.Controllers
 {
     [ApiController]
-    [Route("backlog/genres")]
+    [Route("api/genres")]
     public class GenreController : ControllerBase
     {
-        private readonly BacklogDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly GenreRepository _genreRepository;
 
-        public GenreController(BacklogDbContext context, IMapper mapper)
+        public GenreController(GenreRepository genreRepository)
         {
-            _context = context;
-            _mapper = mapper;
+            _genreRepository = genreRepository;
+        }
+        // GET: /api/genres
+        [HttpGet]
+        public IActionResult GetGenres()
+        {
+            var genres = _genreRepository.GetGenres();
+            var genresDto = genres.Select(g => g.ToGenreDto()).ToList();
+
+            return Ok(genresDto);
         }
 
-        // GET: /backlog/genres/{genre_id}
+        // GET: /api/genres/{genre_id}
         [HttpGet("{genre_id}")]
-        public async Task<IActionResult> GetGenre(Guid genre_id)
+        public IActionResult GetGenre(Guid genre_id)
         {
-            var genre = await _context.Genres.FindAsync(genre_id);
-
+            var genre = _genreRepository.GetGenre(genre_id);
             if (genre == null)
             {
                 return NotFound();
             }
+            var genreDto = genre.ToGenreDto();
 
-            var genreDto = _mapper.Map<GenreDto>(genre);
             return Ok(genreDto);
         }
-
-        // GET: /backlog/genres
-        [HttpGet]
-        public async Task<IActionResult> GetGenres()
-        {
-            var genres = await _context.Genres.ToListAsync();
-            var genreDtos = _mapper.Map<List<GenreDto>>(genres);
-            return Ok(genreDtos);
-        }
     }
+
 }
