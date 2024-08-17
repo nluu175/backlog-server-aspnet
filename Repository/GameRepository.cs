@@ -1,5 +1,6 @@
 using BacklogAPI.Data;
 using BacklogAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BacklogAPI.Repository
 {
@@ -12,22 +13,22 @@ namespace BacklogAPI.Repository
             _context = context;
         }
 
-        public ICollection<Game> GetGames()
+        public async Task<ICollection<Game>> GetGames()
         {
-            var games = _context.Games.ToList();
+            var games = await _context.Games.ToListAsync();
             return games;
         }
 
-        public Game? GetGame(Guid gameId)
+        public async Task<Game?> GetGame(Guid gameId)
         {
-            var game = _context.Games.Find(gameId);
+            var game = await _context.Games.FindAsync(gameId);
             return game;
         }
 
-        public Game CreateGame(Game game)
+        public async Task<Game> CreateGame(Game game)
         {
-            _context.Games.Add(game);
-            _context.SaveChanges();
+            await _context.Games.AddAsync(game);
+            await _context.SaveChangesAsync();
             return game;
         }
     }

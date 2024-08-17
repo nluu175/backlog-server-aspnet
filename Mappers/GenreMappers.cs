@@ -1,6 +1,5 @@
 using BacklogAPI.Dtos;
 using BacklogAPI.Models;
-using BacklogAPI.Repository;
 
 namespace BacklogAPI.Mappers
 {

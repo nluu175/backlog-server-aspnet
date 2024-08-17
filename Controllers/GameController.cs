@@ -12,16 +12,17 @@ namespace BacklogAPI.Controllers
         private readonly GameRepository _gameRepository;
         private readonly GenreRepository _genreRepository;
 
-        public GameController(GameRepository gameRepository)
+        public GameController(GameRepository gameRepository, GenreRepository genreRepository)
         {
             _gameRepository = gameRepository;
+            _genreRepository = genreRepository;
         }
 
         // GET: /api/games
         [HttpGet]
-        public IActionResult GetGames()
+        public async Task<IActionResult> GetGames()
         {
-            var games = _gameRepository.GetGames();
+            var games = await _gameRepository.GetGames();
             var gamesDto = games.Select(g => g.ToGameDto()).ToList();
 
             return Ok(gamesDto);
@@ -29,9 +30,9 @@ namespace BacklogAPI.Controllers
 
         // GET: /api/games/{game_id}
         [HttpGet("{game_id}")]
-        public IActionResult GetGame(Guid game_id)
+        public async Task<IActionResult> GetGame(Guid game_id)
         {
-            var game = _gameRepository.GetGame(game_id);
+            var game = await _gameRepository.GetGame(game_id);
             if (game == null)
             {
                 return NotFound();
@@ -43,11 +44,11 @@ namespace BacklogAPI.Controllers
 
         // POST: /api/games
         [HttpPost]
-        public IActionResult CreateGame([FromBody] CreateGameDto gameDto)
+        public async Task<IActionResult> CreateGame([FromBody] CreateGameDto gameDto)
         {
             // NOTE: Check out "this"
             var game = gameDto.ToGameFromCreateGameDto(_genreRepository);
-            var createdGame = _gameRepository.CreateGame(game);
+            var createdGame = await _gameRepository.CreateGame(game);
             var createdGameDto = createdGame.ToGameDto();
 
             return CreatedAtAction(nameof(GetGame), new { game_id = createdGameDto.Id }, createdGameDto);

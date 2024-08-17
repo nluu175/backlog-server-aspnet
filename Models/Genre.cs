@@ -20,7 +20,5 @@ namespace BacklogAPI.Models
         [Required]
         [MaxLength(100)]
         public required string Code { get; set; } = string.Empty;
-
-
     }
 }
