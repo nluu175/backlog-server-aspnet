@@ -21,7 +21,7 @@ namespace BacklogAPI.Mappers
             };
         }
 
-        public static Game ToGameFromCreateGameDto(this CreateGameDto gameDto, GameRepository gameRepository)
+        public static Game ToGameFromCreateGameDto(this CreateGameDto gameDto, GenreRepository genreRepository)
         {
             return new Game
             {
@@ -30,21 +30,10 @@ namespace BacklogAPI.Mappers
                 ReleaseDate = gameDto.ReleaseDate,
                 SteamAppId = gameDto.SteamAppId,
                 Genres = gameDto.Genres
-                    .Select(genreId => gameRepository.GetGenreById(genreId))
+                    .Select(genreId => genreRepository.GetGenreById(genreId))
                     .Where(g => g != null)
                     .ToList()!,
                 Platform = gameDto.Platform
-            };
-        }
-
-        // -- Genre
-        public static GenreDto ToGenreDto(this Genre genreModel)
-        {
-            return new GenreDto
-            {
-                Id = genreModel.Id,
-                Name = genreModel.Name,
-                Code = genreModel.Code
             };
         }
     }

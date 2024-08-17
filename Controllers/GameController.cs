@@ -10,6 +10,7 @@ namespace BacklogAPI.Controllers
     public class GameController : ControllerBase
     {
         private readonly GameRepository _gameRepository;
+        private readonly GenreRepository _genreRepository;
 
         public GameController(GameRepository gameRepository)
         {
@@ -45,7 +46,7 @@ namespace BacklogAPI.Controllers
         public IActionResult CreateGame([FromBody] CreateGameDto gameDto)
         {
             // NOTE: Check out "this"
-            var game = gameDto.ToGameFromCreateGameDto(_gameRepository);
+            var game = gameDto.ToGameFromCreateGameDto(_genreRepository);
             var createdGame = _gameRepository.CreateGame(game);
             var createdGameDto = createdGame.ToGameDto();
 

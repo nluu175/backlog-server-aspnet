@@ -6,4 +6,10 @@ namespace BacklogAPI.Dtos
         public string? Code { get; set; }
         public string? Name { get; set; }
     }
+
+    public class CreateGenreDto
+    {
+        public string? Code { get; set; }
+        public string? Name { get; set; }
+    }
 }

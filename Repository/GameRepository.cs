@@ -30,10 +30,5 @@ namespace BacklogAPI.Repository
             _context.SaveChanges();
             return game;
         }
-
-        public Genre? GetGenreById(Guid id)
-        {
-            return _context.Genres.FirstOrDefault(g => g.Id == id);
-        }
     }
 }
