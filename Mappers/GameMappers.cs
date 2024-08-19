@@ -16,7 +16,7 @@ namespace BacklogAPI.Mappers
                 Description = gameModel.Description,
                 ReleaseDate = gameModel.ReleaseDate,
                 SteamAppId = gameModel.SteamAppId,
-                Genres = gameModel.Genres?.Select(g => g.Id).ToList() ?? [],
+                Genres = gameModel.Genres?.Select(g => g.Id).ToList() ?? new List<Guid>(),
                 Platform = gameModel.Platform
             };
         }
@@ -36,5 +36,6 @@ namespace BacklogAPI.Mappers
                 Platform = gameDto.Platform
             };
         }
+
     }
 }

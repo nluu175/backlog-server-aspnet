@@ -51,7 +51,7 @@ namespace BacklogAPI.Controllers
             var createdGame = await _gameRepository.CreateGame(game);
             var createdGameDto = createdGame.ToGameDto();
 
-            return CreatedAtAction(nameof(GetGame), new { game_id = createdGameDto.Id }, createdGameDto);
+            return CreatedAtAction(nameof(CreateGame), new { game_id = createdGameDto.Id }, createdGameDto);
         }
     }
 }

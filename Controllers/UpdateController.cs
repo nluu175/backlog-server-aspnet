@@ -1,38 +1,32 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using AutoMapper;
-using BacklogAPI.Data;
-using BacklogAPI.Models;
-using System;
-using System.Linq;
+using BacklogAPI.Repository;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using BacklogAPI.Models;
 
 namespace BacklogAPI.Controllers
 {
+
+
     [ApiController]
-    [Route("backlog/update")]
+    [Route("api/refresh")]
     public class UpdateController : ControllerBase
     {
-        private readonly BacklogDbContext _context;
-        private readonly IMapper _mapper;
         private readonly HttpClient _httpClient;
-        private readonly string _steamApiKey;
+        private readonly UpdateRepository _updateRepository;
 
-        public UpdateController(BacklogDbContext context, IMapper mapper, HttpClient httpClient, IConfiguration configuration)
+        public UpdateController(IHttpClientFactory httpClientFactory, UpdateRepository updateRepository)
         {
-            _context = context;
-            _mapper = mapper;
-            _httpClient = httpClient;
-            _steamApiKey = configuration["STEAM_API_KEY"];
+            _httpClient = httpClientFactory.CreateClient();
+            _updateRepository = updateRepository;
         }
 
         // POST: /backlog/update/{steam_id}
-        [HttpPost("{steam_id}")]
-        public async Task<IActionResult> UpdateBacklog(string steam_id)
+        [HttpPost("{steamId}")]
+        public async Task<IActionResult> UpdateBacklog(string steamId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.SteamId == steam_id);
+            var user = await _updateRepository.GetUserBySteamIdAsync(steamId);
 
             if (user == null)
             {
@@ -40,16 +34,13 @@ namespace BacklogAPI.Controllers
             }
 
             var dataFormat = "json";
+            var steamApiKey = Environment.GetEnvironmentVariable("STEAM_API_KEY");
+            string requestUrl = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={steamApiKey}&steamid={steamId}&include_appinfo=true&format={dataFormat}";
 
-            var requestUrl = $"http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key={_steamApiKey}&steamid={steam_id}&include_appinfo=true&format={dataFormat}";
+            var steamData = await _httpClient.GetFromJsonAsync<Root>(requestUrl);
+            var games = steamData?.Response?.Games;
 
-            var response = await _httpClient.GetStringAsync(requestUrl);
-
-
-            return Ok(response);
-
-
-
+            return Ok(games);
         }
     }
 }
