@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BacklogAPI.Repository
 {
-    public class UpdateRepository
+    public class UserRepository
     {
         private readonly BacklogDbContext _context;
 
-        public UpdateRepository(BacklogDbContext context)
+        public UserRepository(BacklogDbContext context)
         {
             _context = context;
         }

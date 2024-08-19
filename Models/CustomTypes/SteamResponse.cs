@@ -22,7 +22,7 @@ namespace BacklogAPI.Models
         public List<ResponseGameObject> Games { get; set; }
     }
 
-    public class Root
+    public class RootSteamResponse
     {
         public SteamResponse Response { get; set; }
     }
